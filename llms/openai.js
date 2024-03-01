@@ -1,6 +1,6 @@
-import { ChatGPTAPI } from "chatgpt";
+import { ChatGPTAPI } from "npm:chatgpt";
 import { ChatSHLLMBackend } from "./base.js";
-import { EventIterator } from "event-iterator";
+import { EventIterator } from "npm:event-iterator";
 
 class OpenAIChatSHBackend extends ChatSHLLMBackend {
   constructor(config) {

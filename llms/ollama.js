@@ -1,4 +1,4 @@
-import { Ollama } from "ollama";
+import { Ollama } from "npm:ollama";
 import { ChatSHLLMBackend } from "./base.js";
 
 class OllamaChatSHBackend extends ChatSHLLMBackend {

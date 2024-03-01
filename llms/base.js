@@ -1,8 +1,8 @@
-import { exec } from "child_process";
-import { promisify } from "util";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
+import { stdout } from "node:process";
 const execAsync = promisify(exec);
 
-const SHELL = await get_shell();
 async function get_shell() {
   const shellInfo = (
     await execAsync("uname -a && $SHELL --version")
@@ -10,7 +10,7 @@ async function get_shell() {
   return shellInfo;
 }
 
-const SYSTEM = `
+const SYSTEM = (shell) => `
 You are ChatSH, an AI language model that specializes in assisting users with
 tasks on their system using sh commands. When the user asks you to perform a
 task, you are to ONLY reply with a sh script that performs that task, wrapped
@@ -62,7 +62,7 @@ mv comics/garfield.txt animals/cute.txt cats/
 
 The user system and shell version are:
 
-${SHELL}
+${shell}
 
 Guidelines:
 
@@ -84,11 +84,16 @@ Always assume commands are installed. Never write commands to install things.
 class ChatSHLLMBackend {
   constructor(config) {
     this.config = config;
-    this.systemMessage = SYSTEM;
     this.chatHistory = [];
   }
 
-  async init() {}
+  async _init() {}
+
+  async init() {
+    const SHELL = await get_shell();
+    this.systemMessage = SYSTEM(SHELL);
+    await this._init();
+  }
 
   async _sendMessage(message, options) {
     throw new Error("Not implemented");
@@ -99,7 +104,7 @@ class ChatSHLLMBackend {
     let completeMessage = "";
     let id = "";
     for await (const part of response) {
-      process.stdout.write(part.content);
+      stdout.write(part.content);
       completeMessage += part.content;
       id = part.id;
     }
@@ -111,14 +116,3 @@ class ChatSHLLMBackend {
 }
 
 export { ChatSHLLMBackend };
-
-// interface ChatMessage {
-//     id: string;
-//     text: string;
-//     role: Role;
-//     name?: string;
-//     delta?: string;
-//     detail?: openai.CreateChatCompletionResponse | CreateChatCompletionStreamResponse;
-//     parentMessageId?: string;
-//     conversationId?: string;
-// }

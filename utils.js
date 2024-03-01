@@ -1,6 +1,6 @@
 // read from config file
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 
 class ChatSHConfig {
   constructor(configFile) {
@@ -15,7 +15,7 @@ class ChatSHConfig {
 }
 
 const getConfig = () => {
-  const configFile = path.join(process.env.HOME, ".config", "chatsh");
+  const configFile = path.join(Deno.env.get("HOME"), ".config", "chatsh");
   let config = {};
   if (fs.existsSync(configFile)) {
     config = JSON.parse(fs.readFileSync(configFile, "utf8"));
@@ -41,7 +41,7 @@ echo '{
 }' > ~/.config/chatsh
     `.trim()
     );
-    process.exit(1);
+    Deno.exit(1);
   }
   return new ChatSHConfig(config);
 };
